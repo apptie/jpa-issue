@@ -2,7 +2,6 @@ package com.jpa.issue.service;
 
 import com.jpa.issue.entity.Category;
 import com.jpa.issue.repository.CategoryRepository;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,11 +34,11 @@ public class CategoryService {
         return child.getId();
     }
 
-    public List<Category> findParentCategoryWithJpql(Long parentId) {
+    public Category findParentCategoryWithJpql(Long parentId) {
         return categoryRepository.findParentWithAllChildrenById(parentId);
     }
 
-    public List<Category> findParentCategoryWithEntityGraph(Long parentId) {
-        return categoryRepository.findAllChildrenIdWithParentById(parentId);
+    public Category findParentCategoryWithEntityGraph(Long parentId) {
+        return categoryRepository.findChildrenIdWithParentById(parentId);
     }
 }

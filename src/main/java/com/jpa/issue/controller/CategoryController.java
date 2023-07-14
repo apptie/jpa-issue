@@ -4,7 +4,6 @@ import com.jpa.issue.dto.CreateCategoryRequest;
 import com.jpa.issue.dto.ReadCategoryResponse;
 import com.jpa.issue.entity.Category;
 import com.jpa.issue.service.CategoryService;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,22 +37,18 @@ public class CategoryController {
     }
 
     @GetMapping("/jpql/{parentId}")
-    public ResponseEntity<List<ReadCategoryResponse>> findParentCategoryWithJpql(@PathVariable Long parentId) {
-        final List<Category> categories = categoryService.findParentCategoryWithJpql(parentId);
+    public ResponseEntity<ReadCategoryResponse> findParentCategoryWithJpql(@PathVariable Long parentId) {
+        final Category category = categoryService.findParentCategoryWithJpql(parentId);
 
-        final List<ReadCategoryResponse> responses = categories.stream()
-                .map(ReadCategoryResponse::new)
-                .toList();
-        return ResponseEntity.ok(responses);
+        final ReadCategoryResponse response = new ReadCategoryResponse(category);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/graph/{parentId}")
-    public ResponseEntity<List<ReadCategoryResponse>> findParentCategoryWithEntityGraph(@PathVariable Long parentId) {
-        final List<Category> categories = categoryService.findParentCategoryWithEntityGraph(parentId);
+    public ResponseEntity<ReadCategoryResponse> findParentCategoryWithEntityGraph(@PathVariable Long parentId) {
+        final Category category = categoryService.findParentCategoryWithEntityGraph(parentId);
 
-        final List<ReadCategoryResponse> responses = categories.stream()
-                .map(ReadCategoryResponse::new)
-                .toList();
-        return ResponseEntity.ok(responses);
+        final ReadCategoryResponse response = new ReadCategoryResponse(category);
+        return ResponseEntity.ok(response);
     }
 }
