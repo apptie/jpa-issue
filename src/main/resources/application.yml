@@ -15,9 +15,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        use_sql_comments: true
     database: h2
     database-platform: org.hibernate.dialect.H2Dialect
 
 logging:
   level:
     org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
