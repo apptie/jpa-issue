@@ -48,7 +48,6 @@ public class Region {
     public void initThirdRegion(Region thirdRegion) {
         this.thirdRegions.add(thirdRegion);
         thirdRegion.secondRegion = this;
-        secondRegion.secondRegions.add(this);
         thirdRegion.firstRegion = this.firstRegion;
     }
 
