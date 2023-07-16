@@ -1,24 +1,27 @@
 package com.jpa.issue.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-public class Region {
+@EntityListeners(AuditingEntityListener.class)
+public class Region implements Persistable<String> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String name;
 
@@ -36,10 +39,18 @@ public class Region {
     @OneToMany(mappedBy = "secondRegion", cascade = CascadeType.PERSIST)
     private List<Region> thirdRegions = new ArrayList<>();
 
+    @CreatedDate
+    private LocalDateTime createdDate;
+
     protected Region() {
     }
 
     public Region(String name) {
+        this.name = name;
+    }
+
+    public Region(String id, String name) {
+        this.id = id;
         this.name = name;
     }
 
@@ -54,8 +65,13 @@ public class Region {
         thirdRegion.firstRegion = this.firstRegion;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return this.createdDate == null;
     }
 
     public String getName() {

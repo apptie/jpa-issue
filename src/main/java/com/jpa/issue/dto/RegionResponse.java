@@ -28,7 +28,7 @@ public class RegionResponse {
     }
 
     public Region toEntity() {
-        return new Region(regionName);
+        return new Region(cd, regionName);
     }
 
     public String getLatitude() {
