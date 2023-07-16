@@ -5,6 +5,7 @@ import com.jpa.issue.dto.OpenApiRegionResponse;
 import com.jpa.issue.dto.RegionResponse;
 import com.jpa.issue.entity.Region;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,8 +37,31 @@ public class RestTemplateRegionProcessor implements RegionProcessor {
     }
 
     @Override
-    public String authentication() {
-        return processAuthentication();
+    public List<Region> requestTotalRegions() {
+        final String accessToken = processAuthentication();
+        final List<RegionResponse> firstRegionsResponses = getRegionResponses(null, accessToken);
+
+        final List<Region> totalRegions = new ArrayList<>();
+
+        for (RegionResponse firstRegionResponse : firstRegionsResponses) {
+            final Region firstRegion = firstRegionResponse.toEntity();
+            final List<RegionResponse> secondRegionsResponses = getRegionResponses(firstRegionResponse.getCd(), accessToken);
+
+            for (RegionResponse secondRegionsResponse : secondRegionsResponses) {
+                final Region secondRegion = secondRegionsResponse.toEntity();
+                final List<RegionResponse> thirdRegionsResponses = getRegionResponses(secondRegionsResponse.getCd(), accessToken);
+
+                firstRegion.initSecondRegion(secondRegion);
+                for (RegionResponse thirdRegionsResponse : thirdRegionsResponses) {
+                    final Region thirdRegion = thirdRegionsResponse.toEntity();
+                    secondRegion.initThirdRegion(thirdRegion);
+                }
+            }
+
+            totalRegions.add(firstRegion);
+        }
+
+        return totalRegions;
     }
 
     private String processAuthentication() {
@@ -51,52 +75,17 @@ public class RestTemplateRegionProcessor implements RegionProcessor {
                 .toUri();
 
         try {
-            final OpenApiAccessTokenResponse accessTokenResponse = restTemplate.getForObject(
-                    authenticationUri,
-                    OpenApiAccessTokenResponse.class
-            );
-
+            final OpenApiAccessTokenResponse accessTokenResponse = restTemplate.getForObject(authenticationUri, OpenApiAccessTokenResponse.class);
             return accessTokenResponse.getResult()
-                    .get(ACCESS_TOKEN_NAME);
+                    .get("accessToken");
         } catch (NullPointerException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    @Override
-    public List<RegionResponse> requestFirstRegions(String accessToken) {
-        return requestRegion(null, accessToken);
-    }
-
-    @Override
-    public Region requestFullRegionsByFirstRegion(String accessToken, RegionResponse firstRegionResponse) {
-        final List<RegionResponse> secondRegionsResponses = requestRegion(firstRegionResponse.getCd(), accessToken);
-        final Region firstRegion = firstRegionResponse.toEntity();
-
-        for (RegionResponse secondRegionsResponse : secondRegionsResponses) {
-            final List<RegionResponse> thirdRegionsResponses = requestRegion(secondRegionsResponse.getCd(), accessToken);
-            final Region secondRegion = secondRegionsResponse.toEntity();
-
-            firstRegion.initSecondRegion(secondRegion);
-
-            for (RegionResponse thirdRegionsResponse : thirdRegionsResponses) {
-                final Region thirdRegion = thirdRegionsResponse.toEntity();
-
-                secondRegion.initThirdRegion(thirdRegion);
-            }
-        }
-
-        return firstRegion;
-    }
-
-    private List<RegionResponse> requestRegion(String cd, String accessToken) {
+    private List<RegionResponse> getRegionResponses(String cd, String accessToken) {
         final UriComponents regionUri = createRegionUriBuilder(accessToken, cd);
-
-        final OpenApiRegionResponse regionResponse = restTemplate.getForObject(
-                regionUri.toUri(),
-                OpenApiRegionResponse.class
-        );
+        final OpenApiRegionResponse regionResponse = restTemplate.getForObject(regionUri.toUri(), OpenApiRegionResponse.class);
 
         try {
             return regionResponse.getResult();

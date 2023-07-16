@@ -3,7 +3,6 @@ package com.jpa.issue.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
-import com.jpa.issue.dto.RegionResponse;
 import com.jpa.issue.entity.Region;
 import com.jpa.issue.repository.RegionRepository;
 import java.util.List;
@@ -29,16 +28,12 @@ class RegionServiceTest {
 
     @Test
     void test() {
-        final RegionResponse seoul = new RegionResponse("서울특별시", "11");
-        given(regionProcessor.authentication()).willReturn("accessToken");
-        given(regionProcessor.requestFirstRegions("accessToken")).willReturn(List.of(seoul));
         final Region firstRegion = new Region("서울특별시");
         final Region secondRegion = new Region("송파구");
         final Region thirdRegion = new Region("가락1동");
         secondRegion.initThirdRegion(thirdRegion);
         firstRegion.initSecondRegion(secondRegion);
-        given(regionProcessor.requestFullRegionsByFirstRegion("accessToken", seoul))
-                .willReturn(firstRegion);
+        given(regionProcessor.requestTotalRegions()).willReturn(List.of(firstRegion));
 
         regionService.initializationRegions();
 
