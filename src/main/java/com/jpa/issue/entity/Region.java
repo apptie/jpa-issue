@@ -2,6 +2,7 @@ package com.jpa.issue.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -50,7 +51,6 @@ public class Region {
     public void initThirdRegion(Region thirdRegion) {
         this.thirdRegions.add(thirdRegion);
         thirdRegion.secondRegion = this;
-        //secondRegion = this;
         thirdRegion.firstRegion = this.firstRegion;
     }
 
@@ -76,5 +76,22 @@ public class Region {
 
     public List<Region> getThirdRegions() {
         return thirdRegions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Region region = (Region) o;
+        return Objects.equals(getId(), region.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

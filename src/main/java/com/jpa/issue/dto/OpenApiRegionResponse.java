@@ -10,6 +10,10 @@ public class OpenApiRegionResponse {
     public OpenApiRegionResponse() {
     }
 
+    public OpenApiRegionResponse(List<RegionResponse> result) {
+        this.result = result;
+    }
+
     public String getId() {
         return id;
     }

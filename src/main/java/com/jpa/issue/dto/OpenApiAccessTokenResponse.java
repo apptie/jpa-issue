@@ -13,6 +13,10 @@ public class OpenApiAccessTokenResponse {
     public OpenApiAccessTokenResponse() {
     }
 
+    public OpenApiAccessTokenResponse(Map<String, String> result) {
+        this.result = result;
+    }
+
     public String getId() {
         return id;
     }
