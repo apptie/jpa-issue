@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class RegionService {
 
     private final RegionProcessor regionProcessor;
@@ -18,14 +18,26 @@ public class RegionService {
         this.regionRepository = regionRepository;
     }
 
+    @Transactional
     public void initializationRegions() {
         final List<Region> regions = regionProcessor.requestTotalRegions();
 
         regionRepository.saveAll(regions);
     }
 
-    @Transactional(readOnly = true)
     public List<Region> findAllRegions() {
-        return regionRepository.findTotalRegionsByHierarchy();
+       return regionRepository.findTotalRegionsByHierarchy();
+    }
+
+    public List<Region> findFirstRegions() {
+        return regionRepository.findFirstRegion();
+    }
+
+    public List<Region> findSecondRegions(Long firstRegionId) {
+        return regionRepository.findSecondRegion(firstRegionId);
+    }
+
+    public List<Region> findThirdRegions(Long firstRegionId, Long secondRegionId) {
+        return regionRepository.findThirdRegion(firstRegionId, secondRegionId);
     }
 }
