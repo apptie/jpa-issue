@@ -23,4 +23,9 @@ public class RegionService {
 
         regionRepository.saveAll(regions);
     }
+
+    @Transactional(readOnly = true)
+    public List<Region> findAllRegions() {
+        return regionRepository.findTotalRegionsByHierarchy();
+    }
 }

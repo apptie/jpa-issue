@@ -44,6 +44,7 @@ public class RestTemplateRegionProcessor implements RegionProcessor {
         final List<Region> totalRegions = new ArrayList<>();
 
         for (RegionResponse firstRegionResponse : firstRegionsResponses) {
+            System.out.println("firstRegionResponse.getRegionName() = " + firstRegionResponse.getRegionName());
             final Region firstRegion = firstRegionResponse.toEntity();
             final List<RegionResponse> secondRegionsResponses = getRegionResponses(firstRegionResponse.getCd(), accessToken);
 
