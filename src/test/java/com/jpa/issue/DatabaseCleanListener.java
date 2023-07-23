@@ -3,21 +3,25 @@ package com.jpa.issue;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-@Component
-public class DatabaseCleaner {
+public class DatabaseCleanListener extends AbstractTestExecutionListener {
 
-    private final EntityManager em;
-    private final List<String> tableNames;
+    @Override
+    public void afterTestMethod(TestContext testContext) throws Exception {
+        final EntityManager em = findEntityManager(testContext);
+        final List<String> tableNames = calculateTableNames(em);
 
-    public DatabaseCleaner(EntityManager em) {
-        this.em = em;
-        this.tableNames = calculateTableNames();
+        clean(em, tableNames);
     }
 
-    private List<String> calculateTableNames() {
+    private EntityManager findEntityManager(TestContext testContext) {
+        return testContext.getApplicationContext()
+                .getBean(EntityManager.class);
+    }
+
+    private List<String> calculateTableNames(EntityManager em) {
         return em.getMetamodel()
                 .getEntities()
                 .stream()
@@ -28,8 +32,7 @@ public class DatabaseCleaner {
                 .toList();
     }
 
-    @Transactional
-    public void clean() {
+    private void clean(EntityManager em, List<String> tableNames) {
         em.flush();
         em.createNativeQuery("SET foreign_key_checks = 0").executeUpdate();
 

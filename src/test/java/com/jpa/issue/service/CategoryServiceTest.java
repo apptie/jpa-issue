@@ -2,19 +2,17 @@ package com.jpa.issue.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.jpa.issue.DatabaseCleaner;
+import com.jpa.issue.IsolateDatabase;
 import com.jpa.issue.entity.Category;
 import com.jpa.issue.repository.CategoryRepository;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+//@Transactional
+//@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+//@TestExecutionListeners(value = {DatabaseCleanListener.class}, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
+@IsolateDatabase
 class CategoryServiceTest {
 
     @Autowired
@@ -22,11 +20,6 @@ class CategoryServiceTest {
 
     @Autowired
     CategoryRepository categoryRepository;
-
-    @BeforeEach
-    void setUp(@Autowired DatabaseCleaner databaseCleaner) {
-        databaseCleaner.clean();
-    }
 
     @Test
     void test1() {
